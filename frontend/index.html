@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Food Recommendation System</title>
+
+<style>
+
+body{
+    font-family: "Segoe UI", Arial;
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    margin:0;
+    padding:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* main card */
+
+.container{
+    background:white;
+    padding:40px;
+    border-radius:12px;
+    width:450px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* title */
+
+h2{
+    margin-bottom:25px;
+}
+
+/* input */
+
+input{
+    padding:10px;
+    width:65%;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:16px;
+}
+
+/* button */
+
+button{
+    padding:10px 16px;
+    border:none;
+    background:#2a5298;
+    color:white;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-left:8px;
+}
+
+button:hover{
+    background:#1e3c72;
+}
+
+/* results */
+
+#results{
+    margin-top:25px;
+    list-style:none;
+    padding:0;
+}
+
+#results li{
+    background:#f5f5f5;
+    margin:8px 0;
+    padding:10px;
+    border-radius:6px;
+    font-weight:500;
+}
+#viewMoreBtn{
+    margin-top:15px;
+    padding:10px 20px;
+    background:#2a5298;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+#viewMoreBtn:hover{
+    background:#1e3c72;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🍔 Food Recommendation System</h2>
+
+<input type="text" id="foodInput" placeholder="Enter food name">
+<button onclick="getRecommendations()">Recommend</button>
+
+<h3>Recommended Foods</h3>
+
+<ul id="results"></ul>
+
+<button id="viewMoreBtn" onclick="showMore()" style="display:none;">
+View More
+</button>
+</div>
+
+<script>
+
+let allResults = [];
+let currentIndex = 0;
+const batchSize = 5;
+
+async function getRecommendations(){
+
+    let food = document.getElementById("foodInput").value;
+
+    let response = await fetch(`http://127.0.0.1:8000/recommend/${food}`);
+    let data = await response.json();
+
+    allResults = data.recommendations;
+    currentIndex = 0;
+
+    document.getElementById("results").innerHTML = "";
+
+    showMore();
+}
+
+function showMore(){
+
+    let list = document.getElementById("results");
+
+    let end = currentIndex + batchSize;
+
+    let slice = allResults.slice(currentIndex, end);
+
+    slice.forEach(food => {
+
+        let li = document.createElement("li");
+        li.textContent = food;
+        list.appendChild(li);
+
+    });
+
+    currentIndex = end;
+
+    let btn = document.getElementById("viewMoreBtn");
+
+    if(currentIndex < allResults.length){
+        btn.style.display = "block";
+    } else {
+        btn.style.display = "none";
+    }
+}
+
+</script>
+</body>
+</html>
