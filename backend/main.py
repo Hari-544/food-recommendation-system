@@ -1,20 +1,22 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pickle
+from pathlib import Path
 
 app = FastAPI()
+BASE_DIR = Path(__file__).resolve().parent
 
 # allow frontend requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # allow all origins
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-data = pickle.load(open("foods.pkl","rb"))
-cosine_sim = pickle.load(open("similarity.pkl","rb"))
+data = pickle.load(open(BASE_DIR / "foods.pkl","rb"))
+cosine_sim = pickle.load(open(BASE_DIR / "similarity.pkl","rb"))
 
 print(data['Name'].head(30))
 

@@ -1,165 +1,215 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="api-base-url" content="">
 <title>Food Recommendation System</title>
-
 <style>
-
 body{
-    font-family: "Segoe UI", Arial;
-    background: linear-gradient(135deg,#1e3c72,#2a5298);
-    margin:0;
-    padding:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    margin: 0;
+    padding: 16px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
 }
-
-/* main card */
 
 .container{
-    background:white;
-    padding:40px;
-    border-radius:12px;
-    width:450px;
-    text-align:center;
-    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    width: 450px;
+    max-width: 100%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
 }
-
-/* title */
 
 h2{
-    margin-bottom:25px;
+    margin-bottom: 25px;
 }
 
-/* input */
+.search-row{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
 
 input{
-    padding:10px;
-    width:65%;
-    border:1px solid #ccc;
-    border-radius:6px;
-    font-size:16px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
 }
 
-/* button */
-
 button{
-    padding:10px 16px;
-    border:none;
-    background:#2a5298;
-    color:white;
-    font-size:16px;
-    border-radius:6px;
-    cursor:pointer;
-    margin-left:8px;
+    padding: 10px 16px;
+    border: none;
+    background: #2a5298;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 button:hover{
-    background:#1e3c72;
+    background: #1e3c72;
 }
 
-/* results */
+#statusMessage{
+    min-height: 24px;
+    margin-top: 16px;
+    color: #b42318;
+    font-size: 14px;
+}
 
 #results{
-    margin-top:25px;
-    list-style:none;
-    padding:0;
+    margin-top: 25px;
+    list-style: none;
+    padding: 0;
 }
 
 #results li{
-    background:#f5f5f5;
-    margin:8px 0;
-    padding:10px;
-    border-radius:6px;
-    font-weight:500;
+    background: #f5f5f5;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 500;
 }
+
 #viewMoreBtn{
-    margin-top:15px;
-    padding:10px 20px;
-    background:#2a5298;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+    margin-top: 15px;
+    padding: 10px 20px;
 }
 
-#viewMoreBtn:hover{
-    background:#1e3c72;
-}
+@media (max-width: 600px){
+    .container{
+        padding: 24px 18px;
+        width: 100%;
+    }
 
+    .search-row{
+        flex-direction: column;
+    }
+
+    .search-row button{
+        width: 100%;
+    }
+}
 </style>
-
 </head>
-
 <body>
-
 <div class="container">
+<h2>Food Recommendation System</h2>
 
-<h2>🍔 Food Recommendation System</h2>
-
+<div class="search-row">
 <input type="text" id="foodInput" placeholder="Enter food name">
 <button onclick="getRecommendations()">Recommend</button>
+</div>
+
+<div id="statusMessage"></div>
 
 <h3>Recommended Foods</h3>
 
 <ul id="results"></ul>
 
-<button id="viewMoreBtn" onclick="showMore()" style="display:none;">
-View More
-</button>
+<button id="viewMoreBtn" onclick="showMore()" style="display:none;">View More</button>
 </div>
 
 <script>
-
 let allResults = [];
 let currentIndex = 0;
 const batchSize = 5;
+const apiBaseUrl = getApiBaseUrl();
+
+function getApiBaseUrl(){
+    const configuredUrl = document
+        .querySelector('meta[name="api-base-url"]')
+        ?.getAttribute("content")
+        ?.trim();
+
+    if (configuredUrl) {
+        return configuredUrl.replace(/\/$/, "");
+    }
+
+    if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") {
+        return "http://127.0.0.1:8000";
+    }
+
+    return "";
+}
+
+function setStatus(message, isError = true){
+    const statusMessage = document.getElementById("statusMessage");
+    statusMessage.style.color = isError ? "#b42318" : "#027a48";
+    statusMessage.textContent = message;
+}
 
 async function getRecommendations(){
+    const food = document.getElementById("foodInput").value.trim();
 
-    let food = document.getElementById("foodInput").value;
+    if (!food) {
+        setStatus("Enter a food name first.");
+        return;
+    }
 
-    let response = await fetch(`http://127.0.0.1:8000/recommend/${food}`);
-    let data = await response.json();
+    if (!apiBaseUrl) {
+        setStatus("Frontend is live, but the API is not configured. Deploy the backend and set its public URL in the api-base-url meta tag.");
+        return;
+    }
 
-    allResults = data.recommendations;
-    currentIndex = 0;
+    setStatus("Loading recommendations...", false);
 
-    document.getElementById("results").innerHTML = "";
+    try {
+        const response = await fetch(`${apiBaseUrl}/recommend/${encodeURIComponent(food)}`);
 
-    showMore();
+        if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        allResults = data.recommendations || [];
+        currentIndex = 0;
+
+        document.getElementById("results").innerHTML = "";
+
+        if (!allResults.length) {
+            document.getElementById("viewMoreBtn").style.display = "none";
+            setStatus("No recommendations returned.");
+            return;
+        }
+
+        setStatus("", false);
+        showMore();
+    } catch (error) {
+        document.getElementById("results").innerHTML = "";
+        document.getElementById("viewMoreBtn").style.display = "none";
+        setStatus(`Could not reach the API at ${apiBaseUrl}. ${error.message}`);
+    }
 }
 
 function showMore(){
-
-    let list = document.getElementById("results");
-
-    let end = currentIndex + batchSize;
-
-    let slice = allResults.slice(currentIndex, end);
+    const list = document.getElementById("results");
+    const end = currentIndex + batchSize;
+    const slice = allResults.slice(currentIndex, end);
 
     slice.forEach(food => {
-
-        let li = document.createElement("li");
+        const li = document.createElement("li");
         li.textContent = food;
         list.appendChild(li);
-
     });
 
     currentIndex = end;
 
-    let btn = document.getElementById("viewMoreBtn");
-
-    if(currentIndex < allResults.length){
-        btn.style.display = "block";
-    } else {
-        btn.style.display = "none";
-    }
+    const btn = document.getElementById("viewMoreBtn");
+    btn.style.display = currentIndex < allResults.length ? "block" : "none";
 }
-
 </script>
 </body>
 </html>
