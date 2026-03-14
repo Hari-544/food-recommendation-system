@@ -15,8 +15,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-data = pickle.load(open(BASE_DIR / "foods1.pkl","rb"))
-cosine_sim = pickle.load(open(BASE_DIR / "similarity1.pkl","rb"))
+data = pickle.load(open(BASE_DIR / "foods.pkl","rb"))
+cosine_sim = pickle.load(open(BASE_DIR / "similarity.pkl","rb"))
 
 print(data['Name'].head(30))
 
