@@ -1,47 +1,49 @@
-import pandas as pd
 import pickle
 import re
+from pathlib import Path
 
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Load dataset
-data = pd.read_csv("c:/Users/hari4/food-recommendation/dataset/food_dataset_6000.csv")
 
-print(data.head())
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATASET_PATH = BASE_DIR / "dataset" / "food_dataset_6000.csv"
+BACKEND_DIR = BASE_DIR / "backend"
 
-# Keep required columns
-data = data[['Name','Describe']]
 
-# Remove missing values
-data = data.dropna()
-
-# Clean text function
 def clean_text(text):
     text = text.lower()
-    text = re.sub("[^a-zA-Z ]","",text)
-    return text
+    return re.sub("[^a-zA-Z ]", "", text)
 
-# Clean description
-data['Describe'] = data['Describe'].apply(clean_text)
 
-# 🔥 Combine name + description
-data['combined_features'] = data['Name'] + " " + data['Describe']
+def main():
+    data = pd.read_csv(DATASET_PATH)
+    data = data[["Name", "Describe"]].dropna().copy()
 
-# TF-IDF vectorization
-tfidf = TfidfVectorizer(
-    stop_words="english",
-    ngram_range=(1,2),
-    max_features=8000
-)
+    data["Name"] = data["Name"].astype(str).str.strip()
+    data["Describe"] = data["Describe"].astype(str).apply(clean_text)
+    data["combined_features"] = data["Name"] + " " + data["Describe"]
 
-tfidf_matrix = tfidf.fit_transform(data['combined_features'])
+    tfidf = TfidfVectorizer(
+        stop_words="english",
+        ngram_range=(1, 2),
+        max_features=8000,
+    )
 
-# Cosine similarity
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    tfidf_matrix = tfidf.fit_transform(data["combined_features"])
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
-# Save model
-pickle.dump(cosine_sim, open("similarity1.pkl","wb"))
-pickle.dump(data, open("foods1.pkl","wb"))
+    BACKEND_DIR.mkdir(parents=True, exist_ok=True)
 
-print("Model training completed!")
+    with (BACKEND_DIR / "similarity.pkl").open("wb") as file:
+        pickle.dump(cosine_sim, file)
+
+    with (BACKEND_DIR / "foods.pkl").open("wb") as file:
+        pickle.dump(data, file)
+
+    print(f"Model training completed. Saved artifacts to {BACKEND_DIR}")
+
+
+if __name__ == "__main__":
+    main()
