@@ -1,0 +1,30 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Push to Hugging Face
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "your-username"
+
+          git clone https://$HF_TOKEN@huggingface.co/spaces/Hari-9544/food-recommendation-system space-repo
+
+          rsync -av --exclude '.git' ./ space-repo/
+
+          cd space-repo
+          git add .
+          git commit -m "Auto sync from GitHub"
+          git push
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
