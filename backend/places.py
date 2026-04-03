@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 import logging
+import random
+from datetime import datetime
 from math import atan2, cos, radians, sin, sqrt
+from typing import Mapping
 
 import requests
 
 logger = logging.getLogger(__name__)
+
+# Global cache to prevent redundant, slow Overpass API calls (multi-second lag)
+# Key: (round(lat, 2), round(lon, 2), radius_meters)
+# Value: {"timestamp": datetime, "candidates": list[dict]}
+_RESTAURANT_CACHE: dict[tuple, dict] = {}
+_CACHE_EXPIRATION_SECONDS = 900  # 15 minutes cache
 
 # Multiple Overpass endpoints for failover
 OVERPASS_ENDPOINTS = [
@@ -198,10 +207,20 @@ def _fetch_nearby_restaurant_candidates_once(
     radius_meters: int,
     limit: int = 80,
 ) -> list[dict]:
-    """Fetch nearby restaurants from Overpass API with failover across multiple endpoints.
+    """Fetch nearby restaurants from Overpass API with caching and failover across multiple endpoints.
 
     Uses a simplified query (nodes only) to reduce server load and avoid 504 timeouts.
     """
+    # Create a stable cache key based on a ~1km grid (0.01 precision)
+    # Using 0.01 (approx 1.1km) allows multiple slightly different coordinates to share nearby data.
+    cache_key = (round(latitude, 2), round(longitude, 2), radius_meters)
+    
+    if cache_key in _RESTAURANT_CACHE:
+        entry = _RESTAURANT_CACHE[cache_key]
+        age = (datetime.now() - entry["timestamp"]).total_seconds()
+        if age < _CACHE_EXPIRATION_SECONDS:
+            logger.info("Cache hit for restaurants at %.4f, %.4f (radius: %dm). Age: %ds", latitude, longitude, radius_meters, int(age))
+            return entry["candidates"]
 
     # Simplified query: exact matches on nodes only, avoiding regex (~) which causes 504 Gateway Timeouts
     query = f"""
@@ -247,37 +266,36 @@ def _fetch_nearby_restaurant_candidates_once(
 
     candidates = []
     seen = set()
+    try:
+        elements = response.json().get("elements", [])
+        for el in elements:
+            tags = el.get("tags", {})
+            name = tags.get("name")
+            if not name or name in seen:
+                continue
 
-    for element in response.json().get("elements", []):
-        tags = element.get("tags", {})
-        name = tags.get("name")
-        if not name:
-            continue
-
-        normalized_name = _normalize(name)
-        if normalized_name in seen:
-            continue
-
-        lat, lon = _element_coordinates(element)
-        if lat is None or lon is None:
-            continue
-
-        distance_km = _haversine_distance_km(latitude, longitude, lat, lon)
-        if distance_km > radius_meters / 1000:
-            continue
-
-        seen.add(normalized_name)
-        candidates.append(
-            {
+            # Calculate actual distance to the user's GPS position
+            lat, lon = el.get("lat"), el.get("lon")
+            if lat is None or lon is None:
+                continue
+            dist_km = _haversine_distance_km(latitude, longitude, lat, lon)
+            
+            seen.add(name)
+            candidates.append({
                 "name": name,
-                "distance_km": round(distance_km, 2),
+                "distance_km": round(dist_km, 2),
                 "tags": tags,
-                "base_score": _restaurant_base_score(tags, distance_km),
-            }
-        )
+                "base_score": _restaurant_base_score(tags, dist_km),
+            })
+    except (ValueError, KeyError) as exc:
+        logger.error("Failed to parse Overpass response: %s", exc)
 
-    candidates.sort(key=lambda item: (item["distance_km"], -item["base_score"], item["name"]))
-    return candidates[:limit]
+    # Save to cache
+    _RESTAURANT_CACHE[cache_key] = {
+        "timestamp": datetime.now(),
+        "candidates": candidates
+    }
+    return candidates
 
 
 def fetch_nearby_restaurant_candidates(
