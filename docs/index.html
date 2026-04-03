@@ -350,7 +350,8 @@ function getApiBaseUrl(){
         return configuredUrl.replace(/\/$/, "");
     }
 
-    return "";
+    // Auto-discover the API on the same domain
+    return window.location.origin;
 }
 
 function renderExampleChips(examples){
