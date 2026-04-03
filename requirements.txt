@@ -4,3 +4,5 @@ scikit-learn
 gradio
 fastapi
 uvicorn
+requests
+pytest

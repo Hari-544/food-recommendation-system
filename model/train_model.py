@@ -1,7 +1,7 @@
-import pickle
 import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -19,10 +19,12 @@ def clean_text(text):
 
 def main():
     data = pd.read_csv(DATASET_PATH)
-    data = data[["Name", "Describe"]].dropna().copy()
+    data = data[["Food_ID", "Name", "C_Type", "Veg_Non", "Describe"]].dropna().copy()
 
-    data["Name"] = data["Name"].astype(str).str.strip()
-    data["Describe"] = data["Describe"].astype(str).apply(clean_text)
+    data["Name"] = data["Name"].astype("string").str.strip()  # type: ignore
+    data["C_Type"] = data["C_Type"].astype("string").str.strip()  # type: ignore
+    data["Veg_Non"] = data["Veg_Non"].astype("string").str.strip()  # type: ignore
+    data["Describe"] = data["Describe"].astype("string").apply(clean_text)  # type: ignore
     data["combined_features"] = data["Name"] + " " + data["Describe"]
 
     tfidf = TfidfVectorizer(
@@ -36,11 +38,8 @@ def main():
 
     BACKEND_DIR.mkdir(parents=True, exist_ok=True)
 
-    with (BACKEND_DIR / "similarity.pkl").open("wb") as file:
-        pickle.dump(cosine_sim, file)
-
-    with (BACKEND_DIR / "foods.pkl").open("wb") as file:
-        pickle.dump(data, file)
+    np.save(BACKEND_DIR / "similarity.npy", cosine_sim)
+    data.to_csv(BACKEND_DIR / "foods.csv", index=False)
 
     print(f"Model training completed. Saved artifacts to {BACKEND_DIR}")
 

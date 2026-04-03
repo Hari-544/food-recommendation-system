@@ -6,120 +6,306 @@
 <meta name="api-base-url" content="">
 <title>Food Recommendation System</title>
 <style>
+:root{
+    --bg-start: #163a70;
+    --bg-end: #2858a3;
+    --panel: #ffffff;
+    --panel-muted: #eef4ff;
+    --text: #101828;
+    --muted: #475467;
+    --border: #d0d5dd;
+    --primary: #2858a3;
+    --primary-dark: #173f7a;
+    --success: #027a48;
+    --warning: #b54708;
+    --error: #b42318;
+}
+
+*{
+    box-sizing: border-box;
+}
+
 body{
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
     margin: 0;
-    padding: 16px;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
+    padding: 24px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.14), transparent 30%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    color: var(--text);
 }
 
-.container{
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    width: 450px;
-    max-width: 100%;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    box-sizing: border-box;
+.shell{
+    max-width: 920px;
+    margin: 0 auto;
 }
 
-h2{
-    margin-bottom: 25px;
+.hero{
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 24px;
+    padding: 28px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 18px 40px rgba(5, 20, 48, 0.25);
 }
 
-.search-row{
-    display: flex;
-    gap: 8px;
+.hero h1{
+    margin: 0 0 10px;
+    font-size: clamp(28px, 4vw, 40px);
+}
+
+.hero p{
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.9);
+}
+
+.panel{
+    margin-top: 18px;
+    background: var(--panel);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 22px 40px rgba(10, 21, 46, 0.18);
+}
+
+.search-grid{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
     align-items: center;
 }
 
 input{
-    padding: 10px;
     width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
     font-size: 16px;
-    box-sizing: border-box;
 }
 
 button{
-    padding: 10px 16px;
+    padding: 14px 18px;
     border: none;
-    background: #2a5298;
+    border-radius: 14px;
+    background: var(--primary);
     color: white;
     font-size: 16px;
-    border-radius: 6px;
     cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
 button:hover{
-    background: #1e3c72;
+    background: var(--primary-dark);
+    transform: translateY(-1px);
 }
 
-#statusMessage{
-    min-height: 24px;
-    margin-top: 16px;
-    color: #b42318;
+.tips{
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chip{
+    border: 1px solid rgba(40, 88, 163, 0.18);
+    background: var(--panel-muted);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.status{
+    margin-top: 14px;
+    min-height: 22px;
     font-size: 14px;
 }
 
-#results{
-    margin-top: 25px;
-    list-style: none;
-    padding: 0;
+.status.error{
+    color: var(--error);
 }
 
-#results li{
-    background: #f5f5f5;
-    margin: 8px 0;
-    padding: 10px;
-    border-radius: 6px;
-    font-weight: 500;
+.status.success{
+    color: var(--success);
+}
+
+.status.warning{
+    color: var(--warning);
+}
+
+.summary{
+    display: none;
+    margin-top: 20px;
+    padding: 18px;
+    background: linear-gradient(180deg, #f8fbff, #eef4ff);
+    border: 1px solid #d6e4ff;
+    border-radius: 18px;
+}
+
+.summary h2{
+    margin: 0 0 8px;
+    font-size: 22px;
+}
+
+.summary p{
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.badges{
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge.primary{
+    background: #dbe7ff;
+    color: #163a70;
+}
+
+.badge.success{
+    background: #d1fadf;
+    color: #027a48;
+}
+
+.badge.warning{
+    background: #fef0c7;
+    color: #b54708;
+}
+
+.section-title{
+    margin: 26px 0 12px;
+    font-size: 20px;
+}
+
+#results{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+}
+
+.card{
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid #e4e7ec;
+    border-radius: 18px;
+}
+
+.card-top{
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: start;
+}
+
+.dish-name{
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.meta{
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.source-tag{
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.source-tag.nearby{
+    background: #d1fadf;
+    color: #027a48;
+}
+
+.source-tag.fallback{
+    background: #fef0c7;
+    color: #b54708;
+}
+
+.restaurants{
+    margin-top: 12px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 #viewMoreBtn{
-    margin-top: 15px;
-    padding: 10px 20px;
+    display: none;
+    margin: 18px auto 0;
 }
 
-@media (max-width: 600px){
-    .container{
-        padding: 24px 18px;
-        width: 100%;
+@media (max-width: 680px){
+    body{
+        padding: 14px;
     }
 
-    .search-row{
+    .hero,
+    .panel{
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .search-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .card-top{
         flex-direction: column;
-    }
-
-    .search-row button{
-        width: 100%;
     }
 }
 </style>
 </head>
 <body>
-<div class="container">
-<h2>Food Recommendation System</h2>
+<div class="shell">
+    <section class="hero">
+        <h1>Food Recommendation System</h1>
+        <p>Type an ingredient or dish like <strong>Chicken</strong>, <strong>Fish</strong>, or <strong>Biryani</strong>. The system prioritizes familiar Indian-style dishes first and only shows items that have nearby restaurant support from your location.</p>
+    </section>
 
-<div class="search-row">
-<input type="text" id="foodInput" placeholder="Enter food name">
-<button onclick="getRecommendations()">Recommend</button>
-</div>
+    <section class="panel">
+        <div class="search-grid">
+            <input type="text" id="foodInput" placeholder="Search food, ingredient, or dish">
+            <button id="searchBtn" onclick="getRecommendations()">Recommend</button>
+        </div>
 
-<div id="statusMessage"></div>
+        <div class="tips" id="exampleChips"></div>
+        <div id="statusMessage" class="status"></div>
+        <div id="locationMessage" class="status"></div>
 
-<h3>Recommended Foods</h3>
+        <section id="summaryCard" class="summary">
+            <h2 id="summaryTitle"></h2>
+            <p id="summaryText"></p>
+            <div class="badges" id="summaryBadges"></div>
+        </section>
 
-<ul id="results"></ul>
-
-<button id="viewMoreBtn" onclick="showMore()" style="display:none;">View More</button>
+        <h2 class="section-title">Recommendations</h2>
+        <ul id="results"></ul>
+        <button id="viewMoreBtn" onclick="showMore()">View More</button>
+    </section>
 </div>
 
 <script>
@@ -127,6 +313,32 @@ let allResults = [];
 let currentIndex = 0;
 const batchSize = 5;
 const apiBaseUrl = getApiBaseUrl();
+let cachedLocation = null;
+let cachedLocationAt = 0;
+const locationCacheMs = 30000;
+
+init();
+
+async function init(){
+    renderExampleChips(["Chicken", "Fish", "Paneer", "Mutton", "Biryani", "Fried rice"]);
+
+    if (!apiBaseUrl) {
+        setStatus("Set the backend URL in the api-base-url meta tag before using this frontend.", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/examples`);
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data.examples) && data.examples.length) {
+                renderExampleChips(data.examples);
+            }
+        }
+    } catch (error) {
+        // keep the static examples
+    }
+}
 
 function getApiBaseUrl(){
     const configuredUrl = document
@@ -145,30 +357,105 @@ function getApiBaseUrl(){
     return "";
 }
 
-function setStatus(message, isError = true){
+function renderExampleChips(examples){
+    const container = document.getElementById("exampleChips");
+    container.innerHTML = "";
+
+    examples.forEach(example => {
+        const chip = document.createElement("button");
+        chip.className = "chip";
+        chip.type = "button";
+        chip.textContent = example;
+        chip.onclick = () => {
+            document.getElementById("foodInput").value = example;
+            getRecommendations();
+        };
+        container.appendChild(chip);
+    });
+}
+
+function setStatus(message, type = "success"){
     const statusMessage = document.getElementById("statusMessage");
-    statusMessage.style.color = isError ? "#b42318" : "#027a48";
+    statusMessage.className = `status ${type}`;
     statusMessage.textContent = message;
+}
+
+function setLocationMessage(message, type = "success"){
+    const locationMessage = document.getElementById("locationMessage");
+    locationMessage.className = `status ${type}`;
+    locationMessage.textContent = message;
+}
+
+function setLoading(isLoading){
+    const button = document.getElementById("searchBtn");
+    button.disabled = isLoading;
+    button.textContent = isLoading ? "Loading..." : "Recommend";
+}
+
+function getUserLocation(forceRefresh = false){
+    const hasFreshLocation = cachedLocation && (Date.now() - cachedLocationAt) < locationCacheMs;
+
+    if (hasFreshLocation && !forceRefresh) {
+        return Promise.resolve(cachedLocation);
+    }
+
+    if (!navigator.geolocation) {
+        setLocationMessage("Location is not supported in this browser. Nearby matching cannot run without location.", "warning");
+        return Promise.resolve(null);
+    }
+
+    return new Promise(resolve => {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                cachedLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                cachedLocationAt = Date.now();
+                setLocationMessage(
+                    `Using location: ${cachedLocation.lat.toFixed(5)}, ${cachedLocation.lon.toFixed(5)}.`,
+                    "success"
+                );
+                resolve(cachedLocation);
+            },
+            () => {
+                setLocationMessage("Location is unavailable right now. Showing general recommendations without nearby filtering.", "warning");
+                resolve(null);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 12000,
+                maximumAge: 0
+            }
+        );
+    });
 }
 
 async function getRecommendations(){
     const food = document.getElementById("foodInput").value.trim();
-
     if (!food) {
-        setStatus("Enter a food name first.");
+        setStatus("Enter a food name first.", "error");
         return;
     }
 
     if (!apiBaseUrl) {
-        setStatus("Frontend is live, but the API is not configured. Deploy the backend and set its public URL in the api-base-url meta tag.");
+        setStatus("Frontend is ready, but the API base URL is not configured.", "error");
         return;
     }
 
-    setStatus("Loading recommendations...", false);
+    setLoading(true);
+    setStatus("Searching recommendations...", "success");
 
     try {
-        const response = await fetch(`${apiBaseUrl}/recommend/${encodeURIComponent(food)}`);
+        const endpoint = new URL(`${apiBaseUrl}/recommend/${encodeURIComponent(food)}`);
 
+        const coords = await getUserLocation(true);
+        if (coords) {
+            endpoint.searchParams.set("lat", coords.lat);
+            endpoint.searchParams.set("lon", coords.lon);
+        }
+
+        const response = await fetch(endpoint);
         if (!response.ok) {
             throw new Error(`Request failed with status ${response.status}`);
         }
@@ -176,22 +463,62 @@ async function getRecommendations(){
         const data = await response.json();
         allResults = data.recommendations || [];
         currentIndex = 0;
-
         document.getElementById("results").innerHTML = "";
 
         if (!allResults.length) {
+            hideSummary();
             document.getElementById("viewMoreBtn").style.display = "none";
-            setStatus("No recommendations returned.");
+            setStatus(data.message || "No recommendations returned.", "warning");
             return;
         }
 
-        setStatus("", false);
+        showSummary(data);
+        if (data.location_used && !data.nearby_results_available) {
+            setLocationMessage("Your location was received, but no strong nearby restaurant matches were found for this food.", "warning");
+        } else if (!data.location_used) {
+            setLocationMessage("Showing general recommendations because location was not available.", "warning");
+        }
+
+        setStatus(`Showing ${allResults.length} recommendations for "${data.query}".`, "success");
         showMore();
     } catch (error) {
+        hideSummary();
         document.getElementById("results").innerHTML = "";
         document.getElementById("viewMoreBtn").style.display = "none";
-        setStatus(`Could not reach the API at ${apiBaseUrl}. ${error.message}`);
+        setStatus(`Could not reach the API at ${apiBaseUrl}. ${error.message}`, "error");
+    } finally {
+        setLoading(false);
     }
+}
+
+function showSummary(data){
+    const summaryCard = document.getElementById("summaryCard");
+    const topItem = data.recommendations[0];
+    document.getElementById("summaryTitle").textContent = `Top recommendation: ${topItem.name}`;
+    document.getElementById("summaryText").textContent = `This dish ranked highest for "${data.query}" using name match, ingredient similarity, and an India-first boost for familiar dishes such as biryani, curry, masala, and fry items.`;
+
+    const badges = document.getElementById("summaryBadges");
+    badges.innerHTML = "";
+    addBadge(badges, topItem.food_tag || "Popular nearby dish", "primary");
+    addBadge(badges, topItem.type || "Type unavailable", "primary");
+    addBadge(
+        badges,
+        "Nearby restaurant mode",
+        data.nearby_results_available ? "success" : "warning"
+    );
+
+    summaryCard.style.display = "block";
+}
+
+function hideSummary(){
+    document.getElementById("summaryCard").style.display = "none";
+}
+
+function addBadge(container, text, variant){
+    const badge = document.createElement("span");
+    badge.className = `badge ${variant}`;
+    badge.textContent = text;
+    container.appendChild(badge);
 }
 
 function showMore(){
@@ -199,17 +526,50 @@ function showMore(){
     const end = currentIndex + batchSize;
     const slice = allResults.slice(currentIndex, end);
 
-    slice.forEach(food => {
+    slice.forEach(item => {
         const li = document.createElement("li");
-        li.textContent = food;
+        li.className = "card";
+
+        let sourceText, sourceClass, restaurantLine;
+
+        if (item.restaurant_source === "nearby" && item.restaurants.length > 0) {
+            sourceText = "📍 Nearby";
+            sourceClass = "nearby";
+            restaurantLine = `Restaurants near you: ${item.restaurants.join(", ")}`;
+        } else if (item.restaurant_source === "fallback" && item.restaurants.length > 0) {
+            sourceText = "Suggested";
+            sourceClass = "fallback";
+            restaurantLine = `Suggested restaurants: ${item.restaurants.join(", ")}`;
+        } else {
+            sourceText = "No location";
+            sourceClass = "fallback";
+            restaurantLine = "Could not find nearby restaurants. Try allowing location access or try again.";
+        }
+
+        li.innerHTML = `
+            <div class="card-top">
+                <div>
+                    <div class="dish-name">${item.name}</div>
+                    <div class="meta">${item.food_tag || "Popular nearby dish"} | ${item.type || "Type unavailable"}</div>
+                </div>
+                <span class="source-tag ${sourceClass}">${sourceText}</span>
+            </div>
+            <div class="restaurants">${restaurantLine}</div>
+        `;
+
         list.appendChild(li);
     });
 
     currentIndex = end;
-
-    const btn = document.getElementById("viewMoreBtn");
-    btn.style.display = currentIndex < allResults.length ? "block" : "none";
+    document.getElementById("viewMoreBtn").style.display =
+        currentIndex < allResults.length ? "block" : "none";
 }
+
+document.getElementById("foodInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        getRecommendations();
+    }
+});
 </script>
 </body>
 </html>

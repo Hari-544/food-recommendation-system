@@ -1,0 +1,126 @@
+{
+    "version": "1.1.408",
+    "time": "1775195547502",
+    "generalDiagnostics": [
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\app.py",
+            "severity": "error",
+            "message": "Import \"gradio\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 0,
+                    "character": 7
+                },
+                "end": {
+                    "line": 0,
+                    "character": 13
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\evaluate_model.py",
+            "severity": "error",
+            "message": "Argument of type \"Any | list[Unknown] | Unknown\" cannot be assigned to parameter \"index\" of type \"Axes | None\" in function \"__init__\"\n  Type \"Any | list[Unknown] | Unknown\" is not assignable to type \"Axes | None\"\n    Type \"list[Unknown]\" is not assignable to type \"Axes | None\"\n      \"list[Unknown]\" is not assignable to \"ExtensionArray\"\n      \"list[Unknown]\" is not assignable to \"ndarray[_AnyShape, dtype[Any]]\"\n      \"list[Unknown]\" is not assignable to \"Index\"\n      \"list[Unknown]\" is not assignable to \"Series\"\n      \"list[Unknown]\" is incompatible with protocol \"SequenceNotStr[Unknown]\"\n        \"index\" is an incompatible type\n  ...",
+            "range": {
+                "start": {
+                    "line": 79,
+                    "character": 14
+                },
+                "end": {
+                    "line": 79,
+                    "character": 36
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\evaluate_model.py",
+            "severity": "error",
+            "message": "Argument of type \"Any | list[Unknown] | Unknown\" cannot be assigned to parameter \"columns\" of type \"Axes | None\" in function \"__init__\"\n  Type \"Any | list[Unknown] | Unknown\" is not assignable to type \"Axes | None\"\n    Type \"list[Unknown]\" is not assignable to type \"Axes | None\"\n      \"list[Unknown]\" is not assignable to \"ExtensionArray\"\n      \"list[Unknown]\" is not assignable to \"ndarray[_AnyShape, dtype[Any]]\"\n      \"list[Unknown]\" is not assignable to \"Index\"\n      \"list[Unknown]\" is not assignable to \"Series\"\n      \"list[Unknown]\" is incompatible with protocol \"SequenceNotStr[Unknown]\"\n        \"index\" is an incompatible type\n  ...",
+            "range": {
+                "start": {
+                    "line": 80,
+                    "character": 16
+                },
+                "end": {
+                    "line": 80,
+                    "character": 38
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\model\\train_model.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"str\" for class \"ndarray[_AnyShape, dtype[Any]]\"\n  Attribute \"str\" is unknown",
+            "range": {
+                "start": {
+                    "line": 23,
+                    "character": 49
+                },
+                "end": {
+                    "line": 23,
+                    "character": 52
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\model\\train_model.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"str\" for class \"ndarray[_AnyShape, dtype[Any]]\"\n  Attribute \"str\" is unknown",
+            "range": {
+                "start": {
+                    "line": 24,
+                    "character": 53
+                },
+                "end": {
+                    "line": 24,
+                    "character": 56
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\model\\train_model.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"str\" for class \"ndarray[_AnyShape, dtype[Any]]\"\n  Attribute \"str\" is unknown",
+            "range": {
+                "start": {
+                    "line": 25,
+                    "character": 55
+                },
+                "end": {
+                    "line": 25,
+                    "character": 58
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "c:\\Users\\hari4\\food-recommendation\\model\\train_model.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"apply\" for class \"ndarray[_AnyShape, dtype[Any]]\"\n  Attribute \"apply\" is unknown",
+            "range": {
+                "start": {
+                    "line": 26,
+                    "character": 57
+                },
+                "end": {
+                    "line": 26,
+                    "character": 62
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        }
+    ],
+    "summary": {
+        "filesAnalyzed": 8,
+        "errorCount": 7,
+        "warningCount": 0,
+        "informationCount": 0,
+        "timeInSec": 5.715
+    }
+}
+

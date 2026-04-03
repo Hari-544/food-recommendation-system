@@ -11,8 +11,11 @@ def recommend(food_name: str, top_n: int = 5):
         return
 
     print("\nTop Recommendations:\n")
-    for food in recommendations:
-        print(food)
+    for index, item in enumerate(recommendations, start=1):
+        restaurants = ", ".join(item["restaurants"]) if item["restaurants"] else "Not available"
+        print(f"{index}. {item['name']}")
+        print(f"   Tag: {item['food_tag']} | Type: {item['type']}")
+        print(f"   Restaurant suggestions: {restaurants}\n")
 
 
 if __name__ == "__main__":
