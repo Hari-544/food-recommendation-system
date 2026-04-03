@@ -6,3 +6,4 @@ fastapi
 uvicorn
 requests
 pytest
+aiofiles

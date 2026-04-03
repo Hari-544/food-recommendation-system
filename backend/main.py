@@ -11,6 +11,8 @@ from typing import Literal
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from backend.places import assign_nearby_restaurants
@@ -50,6 +52,13 @@ app.add_middleware(
 )
 
 data, cosine_sim = load_artifacts()
+
+# Mount docs directory to serve static assets (CSS, JS, etc.)
+app.mount("/static", StaticFiles(directory="docs"), name="static")
+
+@app.get("/")
+def read_index():
+    return FileResponse("docs/index.html")
 
 
 def _build_recommendations(
